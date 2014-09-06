@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace JDP {
     public partial class frmMain : Form {
         private readonly ImageDumper _dumper = new ImageDumper();
+        private object _startupPromptSync = new object();
         private PostState _postState;
         private bool _isCommentStale;
 
@@ -27,6 +30,10 @@ namespace JDP {
             _dumper.CaptchaChallengeReceived += ImageDumper_CaptchaChallengeReceived;
             _dumper.CaptchaChallengeReceiveError += ImageDumper_CaptchaChallengeReceiveError;
             _dumper.Stopped += ImageDumper_Stopped;
+            
+            if ((Settings.CheckForUpdates != false) && (Settings.LastUpdateCheck ?? DateTime.MinValue) < DateTime.Now.Date) {
+                CheckForUpdates();
+            }
         }
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e) {
@@ -240,7 +247,8 @@ namespace JDP {
         }
 
         private void btnAbout_Click(object sender, EventArgs e) {
-            MessageBox.Show(this, String.Format("ST4 Image Dumper{0}Version {1} ({2}){0}Author: JDP (jart1126@yahoo.com){0}{3}",
+            MessageBox.Show(this, String.Format("ST4 Image Dumper{0}Version {1} ({2}){0}{0}Original Author: JDP (jart1126@yahoo.com){0}http://sites.google.com/site/st4imagedumper/" +
+                                                "{0}{0}Maintained by: SuperGouge (https://github.com/SuperGouge){0}{3}",
                 Environment.NewLine, General.Version, General.ReleaseDate, General.ApplicationURL), "About",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -556,6 +564,63 @@ namespace JDP {
             Settings.ChanPassToken = txtChanPassToken.Text.Trim();
             Settings.ChanPassPIN = txtChanPassPIN.Text.Trim();
             Settings.Save();
+        }
+        
+        private void CheckForUpdates() {
+            Thread thread = new Thread(CheckForUpdateThread);
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void CheckForUpdateThread() {
+            string html;
+            try {
+                html = Encoding.UTF8.GetString(General.MemoryStreamFromURL(General.ApplicationURL).ToArray());
+            }
+            catch {
+                return;
+            }
+            Settings.LastUpdateCheck = DateTime.Now.Date;
+            var htmlParser = new HTMLParser(html);
+            HTMLTagRange labelLatestDivTagRange = htmlParser.CreateTagRange(htmlParser.FindStartTags("div").FirstOrDefault(t => HTMLParser.ClassAttributeValueHas(t, "label-latest")));
+            if (labelLatestDivTagRange == null) return;
+            HTMLTagRange versionSpanTagRange = htmlParser.CreateTagRange(htmlParser.FindStartTags(labelLatestDivTagRange, "span").FirstOrDefault(t => HTMLParser.ClassAttributeValueHas(t, "css-truncate-target")));
+            if (versionSpanTagRange == null) return;
+            string latestStr = htmlParser.GetInnerHTML(versionSpanTagRange).Replace("v", "");
+            int latest = ParseVersionNumber(latestStr);
+            if (latest == -1) return;
+            int current = ParseVersionNumber(General.Version);
+            if (!String.IsNullOrEmpty(Settings.LatestUpdateVersion)) {
+                current = Math.Max(current, ParseVersionNumber(Settings.LatestUpdateVersion));
+            }
+            if (latest > current) {
+                lock (_startupPromptSync) {
+                    if (IsDisposed) return;
+                    Settings.LatestUpdateVersion = latestStr;
+                    Invoke(() => {
+                        if (MessageBox.Show(this, "A newer version of ST4 Image Dumper is available.  Would you like to open the ST4 Image Dumper website?",
+                            "Newer Version Found", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        {
+                            Process.Start(General.ApplicationURL);
+                        }
+                    });
+                }
+            }
+        }
+        
+        private int ParseVersionNumber(string str) {
+            string[] split = str.Split('.');
+            int num = 0;
+            try {
+                if (split.Length >= 1) num |= (Int32.Parse(split[0]) & 0x7F) << 24;
+                if (split.Length >= 2) num |= (Int32.Parse(split[1]) & 0xFF) << 16;
+                if (split.Length >= 3) num |= (Int32.Parse(split[2]) & 0xFF) << 8;
+                if (split.Length >= 4) num |= (Int32.Parse(split[3]) & 0xFF);
+                return num;
+            }
+            catch {
+                return -1;
+            }
         }
 
         private object Invoke(MethodInvoker method) {

@@ -26,7 +26,7 @@ namespace JDP {
         }
 
         public static string ApplicationURL {
-            get { return "http://sites.google.com/site/st4imagedumper/"; }
+            get { return "https://github.com/SuperGouge/ST4ImageDumper/releases"; }
         }
 
         public static Image ImageFromURL(string url) {

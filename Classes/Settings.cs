@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace JDP {
@@ -95,6 +96,21 @@ namespace JDP {
             get { return Get("ChanPassPIN"); }
             set { Set("ChanPassPIN", value); }
         }
+        
+        public static bool? CheckForUpdates {
+            get { return GetBool("CheckForUpdates"); }
+            set { SetBool("CheckForUpdates", value); }
+        }
+
+        public static DateTime? LastUpdateCheck {
+            get { return GetDate("LastUpdateCheck"); }
+            set { SetDate("LastUpdateCheck", value); }
+        }
+
+        public static string LatestUpdateVersion {
+            get { return Get("LatestUpdateVersion"); }
+            set { Set("LatestUpdateVersion", value); }
+        }
 
         private static string Get(string name) {
             lock (_settings) {
@@ -115,6 +131,14 @@ namespace JDP {
             int x;
             return Int32.TryParse(value, out x) ? x : (int?)null;
         }
+        
+        private static DateTime? GetDate(string name) {
+            string value = Get(name);
+            if (value == null) return null;
+            DateTime x;
+            return DateTime.TryParseExact(value, "yyyyMMdd", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out x) ? x : (DateTime?)null;
+        }
 
         private static void Set(string name, string value) {
             lock (_settings) {
@@ -133,6 +157,10 @@ namespace JDP {
 
         private static void SetInt(string name, int? value) {
             Set(name, value.HasValue ? value.Value.ToString() : null);
+        }
+        
+        private static void SetDate(string name, DateTime? value) {
+            Set(name, value.HasValue ? value.Value.ToString("yyyyMMdd") : null);
         }
 
         private static void Load() {
