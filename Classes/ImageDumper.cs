@@ -24,7 +24,10 @@ namespace JDP {
             new ResponseClassifier("possible malicious code", PostResult.MaliciousFile),
             new ResponseClassifier("field too long", PostResult.FieldTooLong),
             new ResponseClassifier("replies has been reached", PostResult.ThreadFull),
-            new ResponseClassifier("thread specified does not exist", PostResult.ThreadDead)
+            new ResponseClassifier("thread specified does not exist", PostResult.ThreadDead),
+            new ResponseClassifier("banned", PostResult.Banned),
+            new ResponseClassifier("blocked due to abuse", PostResult.Blocked),
+            new ResponseClassifier("copyright claim", PostResult.Copyrighted)
         };
 
         static ImageDumper() {
@@ -550,6 +553,12 @@ namespace JDP {
                             }
                             else if (result == PostResult.ChanPassNotAccepted) {
                                 throw new FatalPostException("4chan Pass was not accepted.");
+                            }
+                            else if (result == PostResult.Banned) {
+                                throw new FatalPostException("You are banned.");
+                            }
+                            else if (result == PostResult.Blocked) {
+                                throw new FatalPostException("Posting from your ISP, IP range, or country has been blocked due to abuse. 4chan Pass users can bypass this block.");
                             }
                             else if (result == PostResult.IncorrectCaptcha) {
                                 consecutiveIncorrectCaptchaCount++;

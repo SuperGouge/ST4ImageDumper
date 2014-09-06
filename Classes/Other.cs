@@ -181,6 +181,9 @@ namespace JDP {
         FieldTooLong,
         ThreadFull,
         ThreadDead,
+        Banned,
+        Blocked,
+        Copyrighted,
         UnrecognizedResponse,
         UnhandledException
     }

@@ -179,7 +179,7 @@ namespace JDP {
                     throw new Exception("Invalid start at post number.");
                 }
                 url = General.CleanPageURL(url);
-                if (url == null || url.IndexOf("/res/", StringComparison.OrdinalIgnoreCase) == -1) {
+                if (url == null || url.IndexOf("/thread/", StringComparison.OrdinalIgnoreCase) == -1) {
                     throw new Exception("Invalid thread URL.");
                 }
             }
@@ -420,6 +420,12 @@ namespace JDP {
                     return "Thread is full";
                 case PostResult.ThreadDead:
                     return "Thread no longer exists";
+                case PostResult.Banned:
+                    return "You are banned";
+                case PostResult.Blocked:
+                    return "ISP, IP range, or country blocked";
+                case PostResult.Copyrighted:
+                    return "File forbidden because of copyright claim";
                 case PostResult.UnrecognizedResponse:
                     return "Unrecognized response";
                 case PostResult.UnhandledException:
