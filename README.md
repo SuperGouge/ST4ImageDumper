@@ -1,4 +1,4 @@
-# ST4ImageDumper
+# ST4 Image Dumper
 
 This project is a fork of the discontinued ST4 Image Dumper. All credit goes to the original developer.  
 You can DOWNLOAD this program here: [https://github.com/SuperGouge/ST4ImageDumper/releases](https://github.com/SuperGouge/ST4ImageDumper/releases)  
@@ -11,7 +11,7 @@ You can find the original official site here: [https://sites.google.com/site/st4
 ## Usage
 Fill in the settings (only folder and URL are required) and click Start. All
 images in the specified folder will be posted. By default, a text file called
-"_posted_.txt" will be created in the folder to keep track of which images have
+"\_posted\_.txt" will be created in the folder to keep track of which images have
 been posted or skipped (e.g. board detects a duplicate image), but there is an
 option to create a "Posted" subfolder and move the completed images there
 instead.
