@@ -4,7 +4,7 @@ This project is a fork of the discontinued ST4 Image Dumper. All credit goes to 
 You can DOWNLOAD this program here: [https://github.com/SuperGouge/ST4ImageDumper/releases](https://github.com/SuperGouge/ST4ImageDumper/releases)  
 You can find the original official site here: [https://sites.google.com/site/st4imagedumper/](https://sites.google.com/site/st4imagedumper/)
 
-## System Requirements:
+## System Requirements
 * .NET Framework 3.5, 4.0 (full or client profile), or 4.5, or
 * Linux/OS X/etc: Mono (included with Ubuntu but make sure libmono-winforms2.0-cil is installed)
 

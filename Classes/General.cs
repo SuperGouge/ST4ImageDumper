@@ -18,7 +18,7 @@ namespace JDP {
         }
 
         public static string ReleaseDate {
-            get { return "2013-Jun-15"; }
+            get { return "2014-Sep-06"; }
         }
 
         public static string ApplicationName {
