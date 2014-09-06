@@ -279,7 +279,7 @@ namespace JDP {
 
                 List<string> paths =
                     (from p in Directory.GetFiles(_imageDirectory)
-                        let allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" }
+                        let allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webm" }
                         where allowedExtensions.Contains(Path.GetExtension(p), StringComparer.OrdinalIgnoreCase) &&
                               (postedSet == null || !postedSet.Contains(Path.GetFileName(p)))
                         select p)
